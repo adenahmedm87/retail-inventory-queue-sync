@@ -108,3 +108,36 @@ The inventory was restored to its original quantity of 8 after testing so the pr
 
 ### What I Learned
 I learned that file structure affects how Node.js resolves modules, and I confirmed that the inventory logic can read, validate, update, save, and detect low stock before RabbitMQ is introduced.
+## RabbitMQ Producer and Consumer Test
+
+### Goal
+Test the complete asynchronous inventory sync flow using RabbitMQ.
+
+### Implementation
+I created a producer that publishes `SALE_COMPLETED` events to the `retail.events` exchange using the routing key `sale.completed`.
+
+The event is routed to the durable `inventory.sales` queue.
+
+I also created a consumer that reads the queued event, updates inventory using the existing inventory module, and manually acknowledges the message after successful processing.
+
+### Test Result
+I published a sale event for SKU `TSH-BLU-M` with a quantity sold of 2.
+
+Before the consumer started, RabbitMQ showed one message waiting in the queue.
+
+After starting the consumer:
+
+- Previous quantity: 45
+- Quantity sold: 2
+- New quantity: 43
+- Low stock: false
+- Message acknowledged successfully
+
+After processing, the RabbitMQ queue returned to zero messages.
+
+I restored the inventory quantity to 45 after the test so the repository keeps a clean baseline.
+
+### What I Learned
+I confirmed that RabbitMQ can hold a sale event while the consumer is offline and deliver it when the consumer becomes available.
+
+I also learned how exchanges, routing keys, queues, consumers, persistent messages, and manual acknowledgments work together in an asynchronous message flow.
