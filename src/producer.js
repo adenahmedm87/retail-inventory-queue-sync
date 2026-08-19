@@ -15,7 +15,7 @@ async function publishSaleEvent() {
   try {
     connection = await amqp.connect(RABBITMQ_URL);
 
-    const channel = await connection.createChannel();
+    const channel = await connection.createConfirmChannel();
 
     await channel.assertExchange(
       EXCHANGE,
@@ -70,6 +70,7 @@ async function publishSaleEvent() {
         contentType: "application/json"
       }
     );
+    await channel.waitForConfirms();
 
     if (!published) {
       console.log("RabbitMQ write buffer is full.");

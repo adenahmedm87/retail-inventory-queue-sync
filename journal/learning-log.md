@@ -296,3 +296,8 @@ This confirmed that the failed message was preserved instead of being lost.
 I learned that RabbitMQ queue arguments must remain consistent with the configuration used when the queue was created.
 
 I also learned how dead-letter queues provide a safe location for failed messages that need investigation or recovery.
+Today I learned about RabbitMQ publisher confirms. Before this, my producer was sending the message and closing the connection without waiting to know if RabbitMQ really received it.
+
+I changed `createChannel()` to `createConfirmChannel()` and added `await channel.waitForConfirms()` after publishing the message.
+
+I tested it and the sale event was published successfully without any error. Now the producer waits for RabbitMQ to confirm the message before it closes the connection.
