@@ -1,0 +1,30 @@
+[
+  {
+    "branchId": "NBO-CBD-01",
+    "name": "Nairobi CBD Branch",
+    "city": "Nairobi",
+    "type": "Physical Store",
+    "status": "ACTIVE"
+  },
+  {
+    "branchId": "NBO-WST-02",
+    "name": "Westlands Branch",
+    "city": "Nairobi",
+    "type": "Physical Store",
+    "status": "ACTIVE"
+  },
+  {
+    "branchId": "MSA-NYK-01",
+    "name": "Nyali Branch",
+    "city": "Mombasa",
+    "type": "Physical Store",
+    "status": "ACTIVE"
+  },
+  {
+    "branchId": "ONLINE-KE-01",
+    "name": "Kenya Online Store",
+    "city": "Online",
+    "type": "E-Commerce",
+    "status": "ACTIVE"
+  }
+]

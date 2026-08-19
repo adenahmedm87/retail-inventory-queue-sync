@@ -1,0 +1,110 @@
+[
+  {
+    "sku": "TSH-BLU-M",
+    "name": "Classic Cotton T-Shirt",
+    "category": "Apparel",
+    "size": "M",
+    "unitPrice": 1800,
+    "quantity": 45,
+    "reorderLevel": 10
+  },
+  {
+    "sku": "TSH-BLK-L",
+    "name": "Classic Cotton T-Shirt",
+    "category": "Apparel",
+    "size": "L",
+    "unitPrice": 1800,
+    "quantity": 27,
+    "reorderLevel": 10
+  },
+  {
+    "sku": "HD-BLK-M",
+    "name": "Essential Pullover Hoodie",
+    "category": "Apparel",
+    "size": "M",
+    "unitPrice": 4200,
+    "quantity": 16,
+    "reorderLevel": 6
+  },
+  {
+    "sku": "HD-GRY-L",
+    "name": "Essential Pullover Hoodie",
+    "category": "Apparel",
+    "size": "L",
+    "unitPrice": 4200,
+    "quantity": 8,
+    "reorderLevel": 6
+  },
+  {
+    "sku": "JN-BLU-32",
+    "name": "Slim Fit Denim Jeans",
+    "category": "Apparel",
+    "size": "32",
+    "unitPrice": 3500,
+    "quantity": 22,
+    "reorderLevel": 8
+  },
+  {
+    "sku": "JN-BLK-34",
+    "name": "Straight Fit Black Jeans",
+    "category": "Apparel",
+    "size": "34",
+    "unitPrice": 3700,
+    "quantity": 11,
+    "reorderLevel": 8
+  },
+  {
+    "sku": "SN-WHT-42",
+    "name": "Urban Runner Sneakers",
+    "category": "Footwear",
+    "size": "42",
+    "unitPrice": 5200,
+    "quantity": 14,
+    "reorderLevel": 5
+  },
+  {
+    "sku": "SN-BLK-43",
+    "name": "Urban Runner Sneakers",
+    "category": "Footwear",
+    "size": "43",
+    "unitPrice": 5200,
+    "quantity": 9,
+    "reorderLevel": 5
+  },
+  {
+    "sku": "CAP-NVY",
+    "name": "Adjustable Navy Cap",
+    "category": "Accessories",
+    "size": "One Size",
+    "unitPrice": 1200,
+    "quantity": 31,
+    "reorderLevel": 8
+  },
+  {
+    "sku": "BP-GRY-20L",
+    "name": "Metro 20L Backpack",
+    "category": "Bags",
+    "size": "20L",
+    "unitPrice": 4800,
+    "quantity": 13,
+    "reorderLevel": 5
+  },
+  {
+    "sku": "JKT-BLK-M",
+    "name": "Lightweight Bomber Jacket",
+    "category": "Outerwear",
+    "size": "M",
+    "unitPrice": 6500,
+    "quantity": 7,
+    "reorderLevel": 5
+  },
+  {
+    "sku": "SOCK-WHT-3PK",
+    "name": "Cotton Crew Socks - 3 Pack",
+    "category": "Accessories",
+    "size": "Regular",
+    "unitPrice": 900,
+    "quantity": 38,
+    "reorderLevel": 12
+  }
+]
