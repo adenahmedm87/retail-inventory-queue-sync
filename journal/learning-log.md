@@ -197,3 +197,58 @@ I also tested a correctly structured sale event, and the validator returned:
 I learned that message validation should happen before business logic so malformed events cannot change inventory data.
 
 This adds another reliability layer before duplicate checking, stock updates, and RabbitMQ acknowledgment.
+## Transaction Audit Logging
+
+### Goal
+Create a permanent audit trail for successful inventory updates.
+
+### Implementation
+I added `data/transactions.json` and created `src/transactionStore.js`.
+
+The RabbitMQ consumer now records a transaction after a successful stock update.
+
+Each transaction stores:
+
+- eventId
+- branchId
+- receiptNumber
+- sku
+- quantitySold
+- previousQuantity
+- newQuantity
+- lowStock status
+- recordedAt timestamp
+
+### Blocker
+During the first transaction test, the sale event was processed but `transactions.json` remained empty.
+
+I checked the running Node.js processes and discovered that two `consumer.js` processes were running at the same time.
+
+An older consumer process was able to receive the RabbitMQ message before the newer consumer containing the transaction-logging code.
+
+### Resolution
+I stopped both Node.js consumer processes and restarted only the latest consumer.
+
+I then tested with a new event ID: `SALE-NBO-CBD-0003`.
+
+### Test Result
+The consumer successfully:
+
+- updated inventory
+- recorded the transaction
+- recorded the event as processed
+- acknowledged the RabbitMQ message
+
+The transaction record showed:
+
+- Previous quantity: 41
+- Quantity sold: 2
+- New quantity: 39
+- Low stock: false
+
+After testing, I restored the inventory and reset the transaction and processed-event files to their clean baseline.
+
+### What I Learned
+I learned that multiple consumers on the same RabbitMQ queue can compete for messages.
+
+I also learned how an audit log helps trace exactly which sale event changed inventory and when the change occurred.

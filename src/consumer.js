@@ -1,12 +1,18 @@
 const amqp = require("amqplib");
 const { reduceStock } = require("./inventoryStore");
+
 const {
   hasProcessedEvent,
   markEventProcessed
 } = require("./processedEventStore");
+
 const {
   validateSaleEvent
 } = require("./eventValidator");
+
+const {
+  recordTransaction
+} = require("./transactionStore");
 
 const RABBITMQ_URL = "amqp://localhost";
 
@@ -75,10 +81,23 @@ async function startConsumer() {
             saleEvent.quantitySold
           );
 
+          recordTransaction({
+            eventId: saleEvent.eventId,
+            branchId: saleEvent.branchId,
+            receiptNumber: saleEvent.receiptNumber,
+            sku: saleEvent.sku,
+            quantitySold: saleEvent.quantitySold,
+            previousQuantity: result.previousQuantity,
+            newQuantity: result.newQuantity,
+            lowStock: result.lowStock
+          });
+
           markEventProcessed(saleEvent.eventId);
 
           console.log("\nInventory updated:");
           console.log(result);
+
+          console.log("\nTransaction recorded.");
 
           console.log(
             `\nEvent recorded as processed: ${saleEvent.eventId}`
