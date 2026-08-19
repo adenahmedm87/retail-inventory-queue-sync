@@ -252,3 +252,47 @@ After testing, I restored the inventory and reset the transaction and processed-
 I learned that multiple consumers on the same RabbitMQ queue can compete for messages.
 
 I also learned how an audit log helps trace exactly which sale event changed inventory and when the change occurred.
+## Dead-Letter Queue
+
+### Goal
+Preserve failed RabbitMQ messages so invalid sale events are not lost.
+
+### Implementation
+I added a dead-letter exchange and queue:
+
+- Exchange: `retail.dlx`
+- Queue: `inventory.sales.dlq`
+- Routing key: `sale.failed`
+
+The main `inventory.sales` queue now routes rejected messages to the dead-letter queue.
+
+### Blocker
+RabbitMQ returned `406 PRECONDITION_FAILED` because the existing `inventory.sales` queue had been created with different arguments.
+
+I also found that `producer.js` still contained an older `assertQueue` declaration using only `{ durable: true }`, which conflicted with the new dead-letter configuration.
+
+### Resolution
+I stopped the running consumer, deleted the existing `inventory.sales` queue, and allowed the updated consumer to recreate it with the dead-letter settings.
+
+I also removed the old duplicate `assertQueue` declaration from `producer.js`.
+
+### Test Result
+I published an intentionally invalid event:
+
+- Event ID: `SALE-NBO-CBD-DLQ-0001`
+- Quantity sold: `-2`
+
+The consumer rejected it with:
+
+`quantitySold must be a positive whole number`
+
+RabbitMQ then showed one message waiting in:
+
+`inventory.sales.dlq`
+
+This confirmed that the failed message was preserved instead of being lost.
+
+### What I Learned
+I learned that RabbitMQ queue arguments must remain consistent with the configuration used when the queue was created.
+
+I also learned how dead-letter queues provide a safe location for failed messages that need investigation or recovery.

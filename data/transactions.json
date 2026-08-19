@@ -1,13 +1,1 @@
-[
-  {
-    "eventId": "SALE-NBO-CBD-0003",
-    "branchId": "NBO-CBD-01",
-    "receiptNumber": "RCPT-20260819-0003",
-    "sku": "TSH-BLU-M",
-    "quantitySold": 2,
-    "previousQuantity": 41,
-    "newQuantity": 39,
-    "lowStock": false,
-    "recordedAt": "2026-08-19T11:37:59.538Z"
-  }
-]
+[]

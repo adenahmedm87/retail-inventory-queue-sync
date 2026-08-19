@@ -6,6 +6,9 @@ const EXCHANGE = "retail.events";
 const QUEUE = "inventory.sales";
 const ROUTING_KEY = "sale.completed";
 
+const DLX = "retail.dlx";
+const DLQ_ROUTING_KEY = "sale.failed";
+
 async function publishSaleEvent() {
   let connection;
 
@@ -20,9 +23,21 @@ async function publishSaleEvent() {
       { durable: true }
     );
 
+    await channel.assertExchange(
+      DLX,
+      "direct",
+      { durable: true }
+    );
+
     await channel.assertQueue(
       QUEUE,
-      { durable: true }
+      {
+        durable: true,
+        arguments: {
+          "x-dead-letter-exchange": DLX,
+          "x-dead-letter-routing-key": DLQ_ROUTING_KEY
+        }
+      }
     );
 
     await channel.bindQueue(
