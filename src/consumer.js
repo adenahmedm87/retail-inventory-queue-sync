@@ -1,5 +1,9 @@
 const amqp = require("amqplib");
 const { reduceStock } = require("./inventoryStore");
+const {
+  hasProcessedEvent,
+  markEventProcessed
+} = require("./processedEventStore");
 
 const RABBITMQ_URL = "amqp://localhost";
 
@@ -31,7 +35,9 @@ async function startConsumer() {
 
     channel.prefetch(1);
 
-    console.log("Inventory consumer is waiting for sale events...");
+    console.log(
+      "Inventory consumer is waiting for sale events..."
+    );
 
     channel.consume(
       QUEUE,
@@ -48,13 +54,28 @@ async function startConsumer() {
           console.log("\nSale event received:");
           console.log(saleEvent);
 
+          if (hasProcessedEvent(saleEvent.eventId)) {
+            console.log(
+              `\nDuplicate event ignored: ${saleEvent.eventId}`
+            );
+
+            channel.ack(message);
+            return;
+          }
+
           const result = reduceStock(
             saleEvent.sku,
             saleEvent.quantitySold
           );
 
+          markEventProcessed(saleEvent.eventId);
+
           console.log("\nInventory updated:");
           console.log(result);
+
+          console.log(
+            `\nEvent recorded as processed: ${saleEvent.eventId}`
+          );
 
           channel.ack(message);
 

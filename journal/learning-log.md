@@ -141,3 +141,32 @@ I restored the inventory quantity to 45 after the test so the repository keeps a
 I confirmed that RabbitMQ can hold a sale event while the consumer is offline and deliver it when the consumer becomes available.
 
 I also learned how exchanges, routing keys, queues, consumers, persistent messages, and manual acknowledgments work together in an asynchronous message flow.
+## Duplicate Event Protection
+
+### Goal
+Prevent the same sale event from changing inventory more than once.
+
+### Implementation
+I added `data/processedEvents.json` to store processed event IDs and created `src/processedEventStore.js` to read and write those IDs.
+
+The consumer now checks the incoming `eventId` before reducing stock.
+
+If the event has already been processed, the consumer acknowledges it without applying the inventory update again.
+
+### Test Result
+I published the same event ID twice:
+
+`SALE-NBO-CBD-0001`
+
+The first event reduced SKU `TSH-BLU-M` from 45 to 43.
+
+After publishing the same event again, the quantity remained 43 instead of dropping to 41.
+
+This confirmed that duplicate-event protection was working.
+
+After testing, I restored the inventory quantity to 45 and reset `processedEvents.json` to an empty list so the repository keeps a clean baseline.
+
+### What I Learned
+I learned how idempotency protects a message-driven system from applying the same business event more than once.
+
+A unique event ID allows the consumer to recognize duplicate deliveries and keep inventory data consistent.
