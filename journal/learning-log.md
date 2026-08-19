@@ -84,3 +84,27 @@ I also learned that RabbitMQ and its command-line tools use an Erlang cookie to 
 ### Next Step
 
 Build the smallest producer and consumer test and confirm that a message can pass through RabbitMQ.
+## Inventory Store Implementation and Test
+
+### Goal
+Test the inventory update logic independently before connecting it to RabbitMQ.
+
+### Blocker
+The first test failed with `MODULE_NOT_FOUND` because the `src` folder had accidentally been created inside the `data` folder.
+
+### Resolution
+I corrected the project structure so that `src` exists at the project root, then recreated `inventoryStore.js` and `testInventoryStore.js`.
+
+### Test Result
+I tested SKU `HD-GRY-L`.
+
+- Starting quantity: 8
+- Quantity sold: 3
+- New quantity: 5
+- Reorder level: 6
+- Low stock detected: true
+
+The inventory was restored to its original quantity of 8 after testing so the project keeps a clean baseline.
+
+### What I Learned
+I learned that file structure affects how Node.js resolves modules, and I confirmed that the inventory logic can read, validate, update, save, and detect low stock before RabbitMQ is introduced.
