@@ -4,6 +4,9 @@ const {
   hasProcessedEvent,
   markEventProcessed
 } = require("./processedEventStore");
+const {
+  validateSaleEvent
+} = require("./eventValidator");
 
 const RABBITMQ_URL = "amqp://localhost";
 
@@ -53,6 +56,10 @@ async function startConsumer() {
 
           console.log("\nSale event received:");
           console.log(saleEvent);
+
+          validateSaleEvent(saleEvent);
+
+          console.log("\nEvent validation passed.");
 
           if (hasProcessedEvent(saleEvent.eventId)) {
             console.log(

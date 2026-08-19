@@ -170,3 +170,30 @@ After testing, I restored the inventory quantity to 45 and reset `processedEvent
 I learned how idempotency protects a message-driven system from applying the same business event more than once.
 
 A unique event ID allows the consumer to recognize duplicate deliveries and keep inventory data consistent.
+## Sale Event Validation
+
+### Goal
+Prevent malformed sale events from reaching the inventory update logic.
+
+### Implementation
+I created `src/eventValidator.js` and connected it to the RabbitMQ consumer.
+
+The validator checks the required sale-event fields and verifies that values such as `quantitySold` and `unitPrice` are valid before inventory is updated.
+
+### Test Result
+I tested an invalid event with:
+
+`quantitySold: -2`
+
+The validator rejected it with:
+
+`quantitySold must be a positive whole number`
+
+I also tested a correctly structured sale event, and the validator returned:
+
+`true`
+
+### What I Learned
+I learned that message validation should happen before business logic so malformed events cannot change inventory data.
+
+This adds another reliability layer before duplicate checking, stock updates, and RabbitMQ acknowledgment.
