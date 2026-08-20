@@ -4,8 +4,10 @@
     "name": "Amina Hassan",
     "ticketType": "General",
     "qrCode": "SOLSTICE-ATT-001",
-    "status": "PENDING_PRINT",
-    "activePrintJobId": "PRINT-e6d9d26f-cdc6-4b40-91ff-5f610ba74881"
+    "status": "NOT_CHECKED_IN",
+    "activePrintJobId": null,
+    "lastCompletedPrintJobId": null,
+    "checkedInAt": null
   },
   {
     "attendeeId": "ATT-002",
@@ -13,7 +15,9 @@
     "ticketType": "VIP",
     "qrCode": "SOLSTICE-ATT-002",
     "status": "NOT_CHECKED_IN",
-    "activePrintJobId": null
+    "activePrintJobId": null,
+    "lastCompletedPrintJobId": null,
+    "checkedInAt": null
   },
   {
     "attendeeId": "ATT-003",
@@ -21,6 +25,8 @@
     "ticketType": "Speaker",
     "qrCode": "SOLSTICE-ATT-003",
     "status": "NOT_CHECKED_IN",
-    "activePrintJobId": null
+    "activePrintJobId": null,
+    "lastCompletedPrintJobId": null,
+    "checkedInAt": null
   }
-]
+]   

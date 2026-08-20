@@ -17,6 +17,11 @@ const {
   publishPrintRequest
 } = require("./printQueue");
 
+const {
+  loadAttendees,
+  confirmPrintJob
+} = require("./attendeeStore");
+
 const app = express();
 
 app.use(cors());
@@ -37,8 +42,11 @@ const RABBITMQ_URL =
 
 /*
   ------------------------------------------------
-  ORIGINAL RETAIL PROTOTYPE
-  Temporarily kept while Day 4 pivot is being built.
+  ASSIGNMENT 1 RETAIL PROTOTYPE
+
+  Temporarily kept during the Day 4 refactor.
+  It will be removed/deprecated from the final
+  Assignment 2 active application.
   ------------------------------------------------
 */
 
@@ -92,8 +100,44 @@ app.get(
 
 /*
   ------------------------------------------------
-  DAY 4 PIVOT:
-  SOLSTICE EVENTS CHECK-IN
+  SOLSTICE EVENTS - ATTENDEES
+  ------------------------------------------------
+*/
+
+app.get(
+  "/api/attendees",
+  (req, res) => {
+    try {
+      const attendees =
+        loadAttendees();
+
+      res.json(attendees);
+
+    } catch (error) {
+      console.error(
+        "Attendee load error:",
+        error.message
+      );
+
+      res.status(500).json({
+        error:
+          "Could not load attendees."
+      });
+    }
+  }
+);
+
+/*
+  ------------------------------------------------
+  SOLSTICE EVENTS - QR CHECK-IN
+
+  Scan QR
+      ↓
+  Create print job
+      ↓
+  Set attendee PENDING_PRINT
+      ↓
+  Publish request to RabbitMQ
   ------------------------------------------------
 */
 
@@ -106,10 +150,12 @@ app.post(
       } = req.body;
 
       if (!qrCode) {
-        return res.status(400).json({
-          error:
-            "QR code is required."
-        });
+        return res
+          .status(400)
+          .json({
+            error:
+              "QR code is required."
+          });
       }
 
       const {
@@ -146,6 +192,8 @@ app.post(
         status:
           "PENDING_PRINT",
 
+        printJobId,
+
         attendee
       });
 
@@ -165,9 +213,96 @@ app.post(
 
 /*
   ------------------------------------------------
+  SOLSTICE EVENTS - PRINT WEBHOOK
+
+  Badge printer confirms completion
+      ↓
+  Webhook receives printJobId
+      ↓
+  Matching PENDING_PRINT attendee
+      ↓
+  CHECKED_IN
+  ------------------------------------------------
+*/
+
+app.post(
+  "/webhooks/print-completed",
+  (req, res) => {
+    try {
+      const {
+        printJobId,
+        status
+      } = req.body;
+
+      if (!printJobId) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "printJobId is required."
+          });
+      }
+
+      if (
+        status &&
+        status !== "COMPLETED"
+      ) {
+        return res
+          .status(400)
+          .json({
+            error:
+              "Print job is not completed."
+          });
+      }
+
+      const result =
+        confirmPrintJob(
+          printJobId
+        );
+
+      if (
+        result.duplicateCallback
+      ) {
+        return res.json({
+          message:
+            "Print confirmation already processed.",
+
+          attendee:
+            result.attendee
+        });
+      }
+
+      res.json({
+        message:
+          "Badge print confirmed. Attendee checked in.",
+
+        status:
+          "CHECKED_IN",
+
+        attendee:
+          result.attendee
+      });
+
+    } catch (error) {
+      console.error(
+        "Webhook error:",
+        error.message
+      );
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/*
+  ------------------------------------------------
   ORIGINAL RETAIL ROUTES
-  We will remove/deprecate these once the
-  Solstice pivot is working end-to-end.
+
+  These remain temporarily while the pivot
+  is being completed and tested.
   ------------------------------------------------
 */
 
@@ -183,6 +318,7 @@ app.get(
       res.json(
         inventory
       );
+
     } catch (error) {
       res.status(500).json({
         error:
@@ -204,6 +340,7 @@ app.get(
       res.json(
         transactions
       );
+
     } catch (error) {
       res.status(500).json({
         error:
