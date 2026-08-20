@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/adenahmedm87/retail-inventory-queue-sync#readme",
   "dependencies": {
-    "amqplib": "^2.0.1"
+    "amqplib": "^2.0.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
   }
 }

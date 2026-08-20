@@ -250,29 +250,62 @@ Inventory Consumer
   </footer>
 
   <script>
-    const saleButton = document.getElementById("saleButton");
-    const saleResult = document.getElementById("saleResult");
+    
+  const API_URL = "http://localhost:3000";
 
-    saleButton.addEventListener("click", () => {
-      const branch =
-        document.getElementById("branch").value;
+  const saleButton = document.getElementById("saleButton");
+  const saleResult = document.getElementById("saleResult");
 
-      const product =
-        document.getElementById("product").value;
+  saleButton.addEventListener("click", async () => {
+    const branchId =
+      document.getElementById("branch").value;
 
-      const quantity =
-        Number(document.getElementById("quantity").value);
+    const sku =
+      document.getElementById("product").value;
 
-      if (!Number.isInteger(quantity) || quantity <= 0) {
+    const quantitySold =
+      Number(document.getElementById("quantity").value);
+
+    if (!Number.isInteger(quantitySold) || quantitySold <= 0) {
+      saleResult.textContent =
+        "Please enter a valid quantity.";
+      return;
+    }
+
+    saleResult.textContent =
+      "Sending sale to RabbitMQ...";
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/sales`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            branchId,
+            sku,
+            quantitySold
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
         saleResult.textContent =
-          "Please enter a valid quantity.";
+          data.error || "Sale failed.";
         return;
       }
 
       saleResult.textContent =
-        `Demo sale selected: ${branch} sold ${quantity} × ${product}. ` +
-        `Backend connection will be added next.`;
-    });
-  </script>
+        `Sale accepted by RabbitMQ. Event ID: ${data.event.eventId}`;
+    } catch (error) {
+      saleResult.textContent =
+        "Could not reach the backend API.";
+    }
+  });
+</script>
 </body>
 </html>
