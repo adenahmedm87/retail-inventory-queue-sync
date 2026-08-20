@@ -306,3 +306,4 @@ Today I improved my producer so it is not using only one hard-coded sale anymore
 The producer now reads the branch and inventory data from the JSON files, checks that the branch and product exist, and generates a unique event ID for every sale.
 
 I tested it using the Westlands branch with `NBO-WST-02`, `TSH-BLU-M`, and quantity `3`. The event was sent through RabbitMQ, the consumer received it, updated the inventory, recorded the transaction, and acknowledged the message successfully.
+I tested the POS producer using the Nyali branch with HD-GRY-L and quantity 2. The event went through RabbitMQ and the inventory changed from 8 to 6. Since the reorder level is 6, the system correctly returned lowStock: true. This also showed that the producer works with different branches and products, not only the first test data.
