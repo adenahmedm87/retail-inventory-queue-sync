@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retail Inventory Queue Sync</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #1f2937;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    select,
+    input,
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    select,
+    input {
+      border: 1px solid #d1d5db;
+      background: white;
+    }
+
+    button {
+      margin-top: 18px;
+      border: none;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #374151;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #eef2ff;
+      min-height: 48px;
+    }
+
+    .architecture {
+      font-family: monospace;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 16px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      margin: 4px 4px 4px 0;
+      background: #e5e7eb;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Retail Inventory Queue Sync</h1>
+    <p>Event-driven retail inventory prototype using RabbitMQ</p>
+  </header>
+
+  <main>
+    <div class="grid">
+
+      <section class="card">
+        <h2>POS Sale Simulator</h2>
+        <p class="small">
+          Simulate a sale from one of the retail branches.
+        </p>
+
+        <label for="branch">Branch</label>
+        <select id="branch">
+          <option value="NBO-CBD-01">Nairobi CBD</option>
+          <option value="NBO-WST-02">Westlands</option>
+          <option value="MSA-NYK-01">Nyali</option>
+          <option value="ONLINE-KE-01">Kenya Online Store</option>
+        </select>
+
+        <label for="product">Product</label>
+        <select id="product">
+          <option value="TSH-BLU-M">
+            Classic Cotton T-Shirt — KES 1,800
+          </option>
+          <option value="HD-GRY-L">
+            Essential Pullover Hoodie — KES 4,200
+          </option>
+        </select>
+
+        <label for="quantity">Quantity</label>
+        <input
+          id="quantity"
+          type="number"
+          min="1"
+          value="1"
+        />
+
+        <button id="saleButton">
+          Complete Sale
+        </button>
+
+        <div id="saleResult" class="status">
+          No sale submitted yet.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>System Flow</h2>
+
+        <div class="architecture">Retail POS
+   |
+   | SALE_COMPLETED
+   v
+RabbitMQ Exchange
+retail.events
+   |
+   | sale.completed
+   v
+inventory.sales
+   |
+   v
+Inventory Consumer
+   |
+   +--> Update inventory
+   +--> Record transaction
+   +--> Detect low stock
+   +--> Prevent duplicates
+   +--> Acknowledge message</div>
+      </section>
+
+      <section class="card">
+        <h2>Reliability Features</h2>
+
+        <span class="badge">Durable Queue</span>
+        <span class="badge">Persistent Messages</span>
+        <span class="badge">Manual ACK</span>
+        <span class="badge">Publisher Confirms</span>
+        <span class="badge">Validation</span>
+        <span class="badge">Duplicate Protection</span>
+        <span class="badge">Dead-Letter Queue</span>
+        <span class="badge">Low-Stock Detection</span>
+
+        <p class="small">
+          Failed messages are routed to
+          <strong>inventory.sales.dlq</strong>.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Demo Status</h2>
+
+        <p>
+          GitHub Pages frontend:
+          <strong>Online</strong>
+        </p>
+
+        <p>
+          RabbitMQ backend:
+          <strong>Local prototype</strong>
+        </p>
+
+        <p class="small">
+          The frontend is now visible on GitHub Pages.
+          The next step is connecting it to the RabbitMQ backend.
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    Retail Inventory Queue Sync — RabbitMQ Learning Prototype
+  </footer>
+
+  <script>
+    const saleButton = document.getElementById("saleButton");
+    const saleResult = document.getElementById("saleResult");
+
+    saleButton.addEventListener("click", () => {
+      const branch =
+        document.getElementById("branch").value;
+
+      const product =
+        document.getElementById("product").value;
+
+      const quantity =
+        Number(document.getElementById("quantity").value);
+
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        saleResult.textContent =
+          "Please enter a valid quantity.";
+        return;
+      }
+
+      saleResult.textContent =
+        `Demo sale selected: ${branch} sold ${quantity} × ${product}. ` +
+        `Backend connection will be added next.`;
+    });
+  </script>
+</body>
+</html>
