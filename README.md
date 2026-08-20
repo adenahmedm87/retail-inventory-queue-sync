@@ -1,3 +1,35 @@
+## Assignment 1 – Independent Learning Mini-Prototype
+
+**Unfamiliar Tool:** RabbitMQ Message Queues
+
+This is the working mini-prototype created for Assignment 1 before the Day 4 pivot.
+
+### Live Working Prototype
+
+https://assignment-one-rabbitmq-prototype.onrender.com
+
+> The free Render service may take about 50 seconds to start after a period of inactivity.
+
+### Preserved Assignment 1 Version
+
+- GitHub Tag: `assignment-1-rabbitmq-prototype`
+- Deployment Branch: `assignment-1-live`
+- Final Pre-Pivot Commit: `d17b496`
+
+### What the Prototype Demonstrates
+
+The prototype uses RabbitMQ to process retail sale events asynchronously and update inventory.
+
+Flow:
+
+`POS Dashboard → Express API → RabbitMQ → Inventory Consumer → Inventory Update`
+
+The Assignment 1 version is preserved separately so that the later Meridian Pivot work does not overwrite the original unfamiliar-tool prototype.
+
+### Learning Evidence
+
+The repository also contains the Learning & Blocker Journal documenting errors, troubleshooting steps, resources consulted, and solutions discovered while learning RabbitMQ.
+
 # Retail Inventory Queue Sync
 
 A small event-driven inventory synchronization service built with Node.js and RabbitMQ.
