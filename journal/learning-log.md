@@ -301,3 +301,8 @@ Today I learned about RabbitMQ publisher confirms. Before this, my producer was 
 I changed `createChannel()` to `createConfirmChannel()` and added `await channel.waitForConfirms()` after publishing the message.
 
 I tested it and the sale event was published successfully without any error. Now the producer waits for RabbitMQ to confirm the message before it closes the connection.
+Today I improved my producer so it is not using only one hard-coded sale anymore. I changed it so I can pass the branch ID, product SKU, and quantity from the terminal.
+
+The producer now reads the branch and inventory data from the JSON files, checks that the branch and product exist, and generates a unique event ID for every sale.
+
+I tested it using the Westlands branch with `NBO-WST-02`, `TSH-BLU-M`, and quantity `3`. The event was sent through RabbitMQ, the consumer received it, updated the inventory, recorded the transaction, and acknowledged the message successfully.

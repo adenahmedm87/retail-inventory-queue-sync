@@ -1,4 +1,7 @@
 const amqp = require("amqplib");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
 const RABBITMQ_URL = "amqp://localhost";
 
@@ -9,13 +12,35 @@ const ROUTING_KEY = "sale.completed";
 const DLX = "retail.dlx";
 const DLQ_ROUTING_KEY = "sale.failed";
 
+const branchesPath = path.join(
+  __dirname,
+  "../data/branches.json"
+);
+
+const inventoryPath = path.join(
+  __dirname,
+  "../data/inventory.json"
+);
+
+function loadJson(filePath) {
+  const fileContent = fs.readFileSync(
+    filePath,
+    "utf8"
+  );
+
+  return JSON.parse(fileContent);
+}
+
 async function publishSaleEvent() {
   let connection;
 
   try {
-    connection = await amqp.connect(RABBITMQ_URL);
+    connection = await amqp.connect(
+      RABBITMQ_URL
+    );
 
-    const channel = await connection.createConfirmChannel();
+    const channel =
+      await connection.createConfirmChannel();
 
     await channel.assertExchange(
       EXCHANGE,
@@ -35,7 +60,8 @@ async function publishSaleEvent() {
         durable: true,
         arguments: {
           "x-dead-letter-exchange": DLX,
-          "x-dead-letter-routing-key": DLQ_ROUTING_KEY
+          "x-dead-letter-routing-key":
+            DLQ_ROUTING_KEY
         }
       }
     );
@@ -46,15 +72,72 @@ async function publishSaleEvent() {
       ROUTING_KEY
     );
 
+    const branchesData =
+      loadJson(branchesPath);
+
+    const inventoryData =
+      loadJson(inventoryPath);
+
+    const branches = Array.isArray(branchesData)
+      ? branchesData
+      : branchesData.branches;
+
+    const inventory = Array.isArray(inventoryData)
+      ? inventoryData
+      : inventoryData.products;
+
+    const branchId =
+      process.argv[2] || "NBO-CBD-01";
+
+    const sku =
+      process.argv[3] || "TSH-BLU-M";
+
+    const quantitySold =
+      Number(process.argv[4] || 1);
+
+    const branch = branches.find(
+      (item) => item.branchId === branchId
+    );
+
+    if (!branch) {
+      throw new Error(
+        `Unknown branch: ${branchId}`
+      );
+    }
+
+    const product = inventory.find(
+      (item) => item.sku === sku
+    );
+
+    if (!product) {
+      throw new Error(
+        `Unknown product SKU: ${sku}`
+      );
+    }
+
+    if (
+      !Number.isInteger(quantitySold) ||
+      quantitySold <= 0
+    ) {
+      throw new Error(
+        "Quantity must be a positive whole number."
+      );
+    }
+
+    const saleId =
+      crypto.randomUUID();
+
     const saleEvent = {
-      eventId: "SALE-NBO-CBD-0001",
+      eventId: `SALE-${saleId}`,
       eventType: "SALE_COMPLETED",
-      branchId: "NBO-CBD-01",
-      receiptNumber: "RCPT-20260819-0001",
-      sku: "TSH-BLU-M",
-      quantitySold: 2,
-      unitPrice: 1800,
-      timestamp: new Date().toISOString()
+      branchId: branchId,
+      receiptNumber:
+        `RCPT-${Date.now()}`,
+      sku: sku,
+      quantitySold: quantitySold,
+      unitPrice: product.unitPrice,
+      timestamp:
+        new Date().toISOString()
     };
 
     const message = Buffer.from(
@@ -70,10 +153,13 @@ async function publishSaleEvent() {
         contentType: "application/json"
       }
     );
+
     await channel.waitForConfirms();
 
     if (!published) {
-      console.log("RabbitMQ write buffer is full.");
+      console.log(
+        "RabbitMQ write buffer is full."
+      );
     }
 
     console.log("Sale event published:");
