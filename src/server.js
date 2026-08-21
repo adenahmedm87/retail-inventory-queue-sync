@@ -18,6 +18,10 @@ const {
 } = require("./printQueue");
 
 const {
+  startPrinterSimulator
+} = require("./printerSimulator");
+
+const {
   loadAttendees,
   confirmPrintJob
 } = require("./attendeeStore");
@@ -50,33 +54,45 @@ const RABBITMQ_URL =
   ------------------------------------------------
 */
 
-const EXCHANGE = "retail.events";
-const QUEUE = "inventory.sales";
-const ROUTING_KEY = "sale.completed";
+const EXCHANGE =
+  "retail.events";
 
-const DLX = "retail.dlx";
-const DLQ_ROUTING_KEY = "sale.failed";
+const QUEUE =
+  "inventory.sales";
 
-const branchesPath = path.join(
-  __dirname,
-  "../data/branches.json"
-);
+const ROUTING_KEY =
+  "sale.completed";
 
-const inventoryPath = path.join(
-  __dirname,
-  "../data/inventory.json"
-);
+const DLX =
+  "retail.dlx";
 
-const transactionsPath = path.join(
-  __dirname,
-  "../data/transactions.json"
-);
+const DLQ_ROUTING_KEY =
+  "sale.failed";
+
+const branchesPath =
+  path.join(
+    __dirname,
+    "../data/branches.json"
+  );
+
+const inventoryPath =
+  path.join(
+    __dirname,
+    "../data/inventory.json"
+  );
+
+const transactionsPath =
+  path.join(
+    __dirname,
+    "../data/transactions.json"
+  );
 
 function loadJson(filePath) {
-  const content = fs.readFileSync(
-    filePath,
-    "utf8"
-  );
+  const content =
+    fs.readFileSync(
+      filePath,
+      "utf8"
+    );
 
   return JSON.parse(content);
 }
@@ -131,13 +147,13 @@ app.get(
   ------------------------------------------------
   SOLSTICE EVENTS - QR CHECK-IN
 
-  Scan QR
+  QR scan
       ↓
   Create print job
       ↓
-  Set attendee PENDING_PRINT
+  PENDING_PRINT
       ↓
-  Publish request to RabbitMQ
+  Publish to RabbitMQ
   ------------------------------------------------
 */
 
@@ -215,11 +231,11 @@ app.post(
   ------------------------------------------------
   SOLSTICE EVENTS - PRINT WEBHOOK
 
-  Badge printer confirms completion
+  Printer finishes
       ↓
   Webhook receives printJobId
       ↓
-  Matching PENDING_PRINT attendee
+  Correct attendee is matched
       ↓
   CHECKED_IN
   ------------------------------------------------
@@ -301,8 +317,7 @@ app.post(
   ------------------------------------------------
   ORIGINAL RETAIL ROUTES
 
-  These remain temporarily while the pivot
-  is being completed and tested.
+  Temporarily kept during pivot development.
   ------------------------------------------------
 */
 
@@ -570,5 +585,15 @@ app.listen(
     );
 
     startConsumer();
+
+    startPrinterSimulator()
+      .catch(
+        (error) => {
+          console.error(
+            "Printer simulator failed:",
+            error.message
+          );
+        }
+      );
   }
 );
