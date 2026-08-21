@@ -70,6 +70,46 @@ function updateAttendeeStatus(
   return attendee;
 }
 
+function rollbackPendingPrint(
+  attendeeId,
+  printJobId
+) {
+  const attendees =
+    loadAttendees();
+
+  const attendee =
+    attendees.find(
+      (item) =>
+        item.attendeeId ===
+        attendeeId
+    );
+
+  if (!attendee) {
+    return null;
+  }
+
+  if (
+    attendee.status !==
+      "PENDING_PRINT" ||
+    attendee.activePrintJobId !==
+      printJobId
+  ) {
+    return null;
+  }
+
+  attendee.status =
+    "NOT_CHECKED_IN";
+
+  attendee.activePrintJobId =
+    null;
+
+  saveAttendees(
+    attendees
+  );
+
+  return attendee;
+}
+
 function confirmPrintJob(
   printJobId
 ) {
@@ -140,5 +180,6 @@ module.exports = {
   loadAttendees,
   findAttendeeByQr,
   updateAttendeeStatus,
+  rollbackPendingPrint,
   confirmPrintJob
 };

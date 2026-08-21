@@ -23,6 +23,7 @@ const {
 
 const {
   loadAttendees,
+  rollbackPendingPrint,
   confirmPrintJob
 } = require("./attendeeStore");
 
@@ -154,12 +155,21 @@ app.get(
   PENDING_PRINT
       ↓
   Publish to RabbitMQ
+
+  If RabbitMQ publishing fails:
+  PENDING_PRINT
+      ↓
+  rollback
+      ↓
+  NOT_CHECKED_IN
   ------------------------------------------------
 */
 
 app.post(
   "/api/checkin",
   async (req, res) => {
+    let preparedCheckIn = null;
+
     try {
       const {
         qrCode
@@ -174,12 +184,15 @@ app.post(
           });
       }
 
+      preparedCheckIn =
+        prepareCheckIn(
+          qrCode
+        );
+
       const {
         attendee,
         printJobId
-      } = prepareCheckIn(
-        qrCode
-      );
+      } = preparedCheckIn;
 
       const printRequest = {
         printJobId,
@@ -197,9 +210,29 @@ app.post(
           new Date().toISOString()
       };
 
-      await publishPrintRequest(
-        printRequest
-      );
+      try {
+        await publishPrintRequest(
+          printRequest
+        );
+
+      } catch (publishError) {
+        rollbackPendingPrint(
+          attendee.attendeeId,
+          printJobId
+        );
+
+        console.error(
+          "RabbitMQ publish failed:",
+          publishError.message
+        );
+
+        return res
+          .status(503)
+          .json({
+            error:
+              "Badge print request could not be queued. Check-in was rolled back."
+          });
+      }
 
       res.status(202).json({
         message:
@@ -318,6 +351,8 @@ app.post(
   ORIGINAL RETAIL ROUTES
 
   Temporarily kept during pivot development.
+  These will be removed from the final
+  Assignment 2 active application.
   ------------------------------------------------
 */
 
