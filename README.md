@@ -1,4 +1,15 @@
-# Retail Inventory Queue Sync
+# Retail Inventory Queue Sync 
+
+## Assignment 1 – Live Prototype
+
+**Live Demo:**  
+https://assignment-one-rabbitmq-prototype.onrender.com
+
+**Purpose:**  
+This branch contains the polished live version of the Assignment 1 RabbitMQ mini-prototype.
+
+**Original preserved checkpoint:**  
+`assignment-1-rabbitmq-prototype`
 
 A small event-driven inventory synchronization service built with Node.js and RabbitMQ.
 
