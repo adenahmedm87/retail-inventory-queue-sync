@@ -8,9 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>
-    Solstice Events Check-In Kiosk
-  </title>
+  <title>Solstice Events Check-In</title>
 
   <style>
     * {
@@ -19,188 +17,150 @@
 
     body {
       margin: 0;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-      background: #f4f6f8;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        linear-gradient(
+          135deg,
+          #f5f7fb,
+          #eef2f7
+        );
       color: #1f2937;
     }
 
-    header {
+    .topbar {
       background: #111827;
       color: white;
-      padding: 24px;
+      padding: 18px 24px;
     }
 
-    header h1 {
-      margin: 0 0 6px;
-      font-size: 28px;
+    .topbar-inner {
+      width: min(900px, 92%);
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
     }
 
-    header p {
+    .brand h1 {
       margin: 0;
-      color: #d1d5db;
+      font-size: 22px;
     }
 
-    main {
-      width: min(
-        1100px,
-        92%
-      );
-      margin: 30px auto;
+    .brand p {
+      margin: 4px 0 0;
+      color: #cbd5e1;
+      font-size: 13px;
     }
 
-    .panel {
-      background: white;
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 24px;
-      box-shadow:
-        0 4px 16px
-        rgba(0, 0, 0, 0.08);
-    }
-
-    .panel h2 {
-      margin-top: 0;
-    }
-
-    .system-status {
+    .online {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 7px;
+      font-size: 13px;
     }
 
-    .status-dot {
-      width: 12px;
-      height: 12px;
+    .dot {
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #9ca3af;
     }
 
-    .status-dot.online {
+    .dot.live {
       background: #22c55e;
     }
 
-    .status-dot.offline {
-      background: #ef4444;
+    .container {
+      width: min(720px, 92%);
+      margin: 38px auto;
     }
 
-    .flow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      font-weight: bold;
-      color: #374151;
-    }
-
-    .flow-step {
-      background: #eef2ff;
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-
-    .arrow {
-      color: #6b7280;
-    }
-
-    #message {
-      display: none;
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow:
+        0 15px 45px
+        rgba(0, 0, 0, 0.09);
       margin-bottom: 20px;
-      padding: 14px 16px;
-      border-radius: 8px;
-      font-weight: bold;
     }
 
-    #message.success {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
+    .title {
+      text-align: center;
+      margin-bottom: 28px;
     }
 
-    #message.error {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
+    .title .icon {
+      font-size: 36px;
     }
 
-    #message.info {
-      display: block;
-      background: #dbeafe;
-      color: #1e40af;
+    .title h2 {
+      margin: 8px 0 5px;
+      font-size: 27px;
     }
 
-    .attendee-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(260px, 1fr)
-        );
-      gap: 18px;
-    }
-
-    .attendee-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 18px;
-      background: #ffffff;
-    }
-
-    .attendee-card h3 {
-      margin:
-        0 0 6px;
-    }
-
-    .ticket {
+    .title p {
+      margin: 0;
       color: #6b7280;
-      margin-bottom: 14px;
     }
 
-    .qr-code {
-      background: #f3f4f6;
-      padding: 9px;
-      border-radius: 6px;
-      font-family: monospace;
-      word-break: break-all;
-      margin-bottom: 14px;
-    }
-
-    .status-label {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-size: 13px;
+    label {
+      display: block;
       font-weight: bold;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
     }
 
-    .status-not-checked-in {
-      background: #e5e7eb;
-      color: #374151;
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 15px;
+      background: white;
+      margin-bottom: 18px;
     }
 
-    .status-pending {
-      background: #fef3c7;
-      color: #92400e;
+    .attendee-preview {
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
     }
 
-    .status-checked-in {
-      background: #dcfce7;
-      color: #166534;
+    .attendee-name {
+      font-size: 19px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .attendee-meta {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .qr {
+      font-family: monospace;
+      background: white;
+      border: 1px dashed #cbd5e1;
+      padding: 9px;
+      border-radius: 7px;
+      font-size: 13px;
     }
 
     button {
       width: 100%;
+      padding: 14px;
       border: none;
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
+      border-radius: 10px;
       background: #2563eb;
       color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     button:hover:not(:disabled) {
@@ -208,381 +168,392 @@
     }
 
     button:disabled {
-      cursor: not-allowed;
       background: #9ca3af;
+      cursor: not-allowed;
     }
 
-    .job-info {
-      margin-top: 12px;
-      color: #6b7280;
-      font-size: 12px;
-      word-break: break-all;
-    }
-
-    .explanation {
-      line-height: 1.6;
-    }
-
-    .explanation strong {
-      color: #111827;
-    }
-
-    footer {
+    .status-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
       text-align: center;
+      background: #f3f4f6;
+    }
+
+    .status-icon {
+      font-size: 32px;
+      margin-bottom: 7px;
+    }
+
+    .status-title {
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .status-message {
+      font-size: 14px;
       color: #6b7280;
-      padding: 15px 10px 30px;
+      margin-top: 5px;
+    }
+
+    .status-ready {
+      background: #f3f4f6;
+    }
+
+    .status-pending {
+      background: #fff7d6;
+      color: #92400e;
+    }
+
+    .status-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .log-card h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    .log {
+      background: #0f172a;
+      color: #86efac;
+      border-radius: 12px;
+      padding: 18px;
+      min-height: 170px;
+      max-height: 260px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .log-line {
+      margin-bottom: 3px;
+    }
+
+    .flow {
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+      padding: 5px 10px 28px;
+    }
+
+    @media (max-width: 600px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .card {
+        padding: 22px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>
-      Solstice Events Co.
-    </h1>
+  <header class="topbar">
+    <div class="topbar-inner">
 
-    <p>
-      Event Check-In Kiosk —
-      Asynchronous Badge Printing
-    </p>
+      <div class="brand">
+        <h1>☀️ Solstice Events Co.</h1>
+        <p>Conference Check-In Service</p>
+      </div>
+
+      <div class="online">
+        <span id="healthDot" class="dot"></span>
+        <span id="healthText">Checking service...</span>
+      </div>
+
+    </div>
   </header>
 
-  <main>
+  <main class="container">
 
-    <div
-      id="message"
-    ></div>
+    <section class="card">
 
-    <section class="panel">
-      <h2>
-        System Status
-      </h2>
+      <div class="title">
+        <div class="icon">🎟️</div>
 
-      <div class="system-status">
-        <div
-          id="statusDot"
-          class="status-dot"
-        ></div>
+        <h2>Attendee Check-In</h2>
 
-        <span id="systemStatus">
-          Checking service...
-        </span>
+        <p>
+          Scan an attendee QR code and wait
+          for badge-print confirmation.
+        </p>
       </div>
-    </section>
 
-    <section class="panel">
-      <h2>
-        Async Check-In Flow
-      </h2>
+      <label for="attendeeSelect">
+        Select Attendee
+      </label>
 
-      <div class="flow">
-        <span class="flow-step">
-          QR Scan
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="flow-step">
-          RabbitMQ
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="flow-step">
-          Pending Print
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="flow-step">
-          Badge Printer
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="flow-step">
-          Webhook
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="flow-step">
-          Checked In
-        </span>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>
-        Test Attendees
-      </h2>
-
-      <p>
-        Select an attendee by pressing
-        <strong>Scan QR</strong>.
-        The attendee remains pending until
-        the badge printer sends its webhook
-        confirmation.
-      </p>
+      <select id="attendeeSelect">
+        <option>Loading attendees...</option>
+      </select>
 
       <div
-        id="attendeeGrid"
-        class="attendee-grid"
+        id="attendeePreview"
+        class="attendee-preview"
+      ></div>
+
+      <button id="scanButton">
+        SCAN QR
+      </button>
+
+      <div
+        id="statusBox"
+        class="status-box status-ready"
       >
-        Loading attendees...
+        <div
+          id="statusIcon"
+          class="status-icon"
+        >
+          📷
+        </div>
+
+        <div
+          id="statusTitle"
+          class="status-title"
+        >
+          Ready to Scan
+        </div>
+
+        <div
+          id="statusMessage"
+          class="status-message"
+        >
+          Select an attendee and scan their QR code.
+        </div>
       </div>
+
     </section>
 
-    <section class="panel explanation">
-      <h2>
-        Reliability Behaviour
-      </h2>
+    <section class="card log-card">
 
-      <p>
-        <strong>Duplicate scans:</strong>
-        An attendee who is already pending
-        or checked in cannot create a second
-        badge print request.
-      </p>
+      <h3>System Activity</h3>
 
-      <p>
-        <strong>Out-of-order callbacks:</strong>
-        Every badge request has its own
-        unique print job ID. Webhook
-        confirmations are matched using
-        that ID instead of arrival order.
-      </p>
+      <div id="activityLog" class="log">
+        <div class="log-line">
+          > Solstice check-in kiosk ready.
+        </div>
+      </div>
 
-      <p>
-        <strong>Queue failure:</strong>
-        If the RabbitMQ print request cannot
-        be published, the pending check-in
-        is rolled back so the attendee can
-        safely try again.
-      </p>
     </section>
+
+    <div class="flow">
+      QR Scan → RabbitMQ → Pending Print →
+      Badge Printer → Webhook → Checked In
+    </div>
 
   </main>
 
-  <footer>
-    Meridian Pivot —
-    Solstice Events Check-In Prototype
-  </footer>
-
   <script>
-    const attendeeGrid =
+    const attendeeSelect =
       document.getElementById(
-        "attendeeGrid"
+        "attendeeSelect"
       );
 
-    const messageBox =
+    const attendeePreview =
       document.getElementById(
-        "message"
+        "attendeePreview"
       );
 
-    const systemStatus =
+    const scanButton =
       document.getElementById(
-        "systemStatus"
+        "scanButton"
       );
 
-    const statusDot =
+    const statusBox =
       document.getElementById(
-        "statusDot"
+        "statusBox"
       );
 
-    let messageTimer;
-
-    function showMessage(
-      text,
-      type = "info"
-    ) {
-      clearTimeout(
-        messageTimer
+    const statusIcon =
+      document.getElementById(
+        "statusIcon"
       );
 
-      messageBox.textContent =
-        text;
+    const statusTitle =
+      document.getElementById(
+        "statusTitle"
+      );
 
-      messageBox.className =
-        type;
+    const statusMessage =
+      document.getElementById(
+        "statusMessage"
+      );
 
-      messageTimer =
-        setTimeout(
-          () => {
-            messageBox.style.display =
-              "none";
-          },
-          5000
-        );
-    }
+    const activityLog =
+      document.getElementById(
+        "activityLog"
+      );
 
-    function getStatusLabel(
-      status
-    ) {
-      if (
-        status ===
-        "PENDING_PRINT"
-      ) {
-        return "Pending Badge Print";
-      }
+    const healthDot =
+      document.getElementById(
+        "healthDot"
+      );
 
-      if (
-        status ===
-        "CHECKED_IN"
-      ) {
-        return "Checked In";
-      }
+    const healthText =
+      document.getElementById(
+        "healthText"
+      );
 
-      return "Not Checked In";
-    }
+    let attendees = [];
 
-    function getStatusClass(
-      status
-    ) {
-      if (
-        status ===
-        "PENDING_PRINT"
-      ) {
-        return "status-pending";
-      }
+    let previousStatus = null;
 
-      if (
-        status ===
-        "CHECKED_IN"
-      ) {
-        return "status-checked-in";
-      }
-
-      return "status-not-checked-in";
-    }
-
-    function getButtonText(
-      status
-    ) {
-      if (
-        status ===
-        "PENDING_PRINT"
-      ) {
-        return "Badge Printing...";
-      }
-
-      if (
-        status ===
-        "CHECKED_IN"
-      ) {
-        return "Already Checked In";
-      }
-
-      return "Scan QR";
-    }
-
-    function createAttendeeCard(
-      attendee
-    ) {
-      const card =
+    function addLog(message) {
+      const line =
         document.createElement(
           "div"
         );
 
-      card.className =
-        "attendee-card";
+      line.className =
+        "log-line";
 
-      const statusClass =
-        getStatusClass(
-          attendee.status
-        );
+      line.textContent =
+        `> ${message}`;
 
-      const disabled =
-        attendee.status !==
-        "NOT_CHECKED_IN";
+      activityLog.appendChild(
+        line
+      );
 
-      let jobInfo = "";
+      activityLog.scrollTop =
+        activityLog.scrollHeight;
+    }
 
-      if (
-        attendee.activePrintJobId
-      ) {
-        jobInfo =
-          `
-            <div class="job-info">
-              Active print job:
-              ${attendee.activePrintJobId}
-            </div>
-          `;
+    function selectedAttendee() {
+      return attendees.find(
+        attendee =>
+          attendee.attendeeId ===
+          attendeeSelect.value
+      );
+    }
+
+    function renderPreview() {
+      const attendee =
+        selectedAttendee();
+
+      if (!attendee) {
+        return;
       }
 
-      if (
-        attendee.lastCompletedPrintJobId
-      ) {
-        jobInfo =
-          `
-            <div class="job-info">
-              Completed print job:
-              ${attendee.lastCompletedPrintJobId}
-            </div>
-          `;
-      }
-
-      card.innerHTML =
+      attendeePreview.innerHTML =
         `
-          <h3>
+          <div class="attendee-name">
             ${attendee.name}
-          </h3>
+          </div>
 
-          <div class="ticket">
+          <div class="attendee-meta">
             ${attendee.ticketType}
             ·
             ${attendee.attendeeId}
           </div>
 
-          <div class="qr-code">
+          <div class="qr">
             ${attendee.qrCode}
           </div>
-
-          <div>
-            <span
-              class="status-label ${statusClass}"
-            >
-              ${getStatusLabel(attendee.status)}
-            </span>
-          </div>
-
-          <button
-            ${disabled ? "disabled" : ""}
-          >
-            ${getButtonText(attendee.status)}
-          </button>
-
-          ${jobInfo}
         `;
 
-      const button =
-        card.querySelector(
-          "button"
-        );
+      updateStatus(attendee);
+    }
 
-      if (!disabled) {
-        button.addEventListener(
-          "click",
-          () => {
-            scanQr(
-              attendee.qrCode
-            );
-          }
-        );
+    function updateStatus(attendee) {
+
+      if (
+        attendee.status ===
+        "PENDING_PRINT"
+      ) {
+        statusBox.className =
+          "status-box status-pending";
+
+        statusIcon.textContent =
+          "⏳";
+
+        statusTitle.textContent =
+          "Badge Printing";
+
+        statusMessage.textContent =
+          "Waiting for printer webhook confirmation...";
+
+        scanButton.disabled = true;
+
+        scanButton.textContent =
+          "PRINTING BADGE...";
+
+        if (
+          previousStatus !==
+          "PENDING_PRINT"
+        ) {
+          addLog(
+            "RabbitMQ badge print request is pending."
+          );
+        }
       }
 
-      return card;
+      else if (
+        attendee.status ===
+        "CHECKED_IN"
+      ) {
+        statusBox.className =
+          "status-box status-success";
+
+        statusIcon.textContent =
+          "✅";
+
+        statusTitle.textContent =
+          "CHECKED IN";
+
+        statusMessage.textContent =
+          "Badge printed and confirmed successfully.";
+
+        scanButton.disabled = true;
+
+        scanButton.textContent =
+          "ALREADY CHECKED IN";
+
+        if (
+          previousStatus !==
+          "CHECKED_IN"
+        ) {
+          addLog(
+            "Webhook confirmation received."
+          );
+
+          addLog(
+            `${attendee.name} checked in successfully.`
+          );
+        }
+      }
+
+      else {
+        statusBox.className =
+          "status-box status-ready";
+
+        statusIcon.textContent =
+          "📷";
+
+        statusTitle.textContent =
+          "Ready to Scan";
+
+        statusMessage.textContent =
+          "Press Scan QR to begin check-in.";
+
+        scanButton.disabled = false;
+
+        scanButton.textContent =
+          "SCAN QR";
+      }
+
+      previousStatus =
+        attendee.status;
     }
 
     async function loadAttendees() {
@@ -592,45 +563,94 @@
             "/api/attendees"
           );
 
-        if (!response.ok) {
-          throw new Error(
-            "Could not load attendees."
-          );
-        }
-
-        const attendees =
+        attendees =
           await response.json();
 
-        attendeeGrid.innerHTML =
+        const selectedId =
+          attendeeSelect.value;
+
+        attendeeSelect.innerHTML =
           "";
 
         attendees.forEach(
-          (attendee) => {
-            attendeeGrid.appendChild(
-              createAttendeeCard(
-                attendee
-              )
+          attendee => {
+            const option =
+              document.createElement(
+                "option"
+              );
+
+            option.value =
+              attendee.attendeeId;
+
+            option.textContent =
+              `${attendee.name} — ${attendee.ticketType}`;
+
+            attendeeSelect.appendChild(
+              option
             );
           }
         );
 
+        if (
+          attendees.some(
+            attendee =>
+              attendee.attendeeId ===
+              selectedId
+          )
+        ) {
+          attendeeSelect.value =
+            selectedId;
+        }
+
+        renderPreview();
+
       } catch (error) {
-        attendeeGrid.innerHTML =
-          `
-            <p>
-              Unable to load attendee data.
-            </p>
-          `;
+        addLog(
+          "Unable to load attendee data."
+        );
       }
     }
 
-    async function scanQr(
-      qrCode
-    ) {
+    async function checkHealth() {
       try {
-        showMessage(
-          "Scanning QR code...",
-          "info"
+        const response =
+          await fetch(
+            "/api/health"
+          );
+
+        if (!response.ok) {
+          throw new Error();
+        }
+
+        healthDot.className =
+          "dot live";
+
+        healthText.textContent =
+          "Service Online";
+
+      } catch (error) {
+        healthDot.className =
+          "dot";
+
+        healthText.textContent =
+          "Service Offline";
+      }
+    }
+
+    async function scanQr() {
+      const attendee =
+        selectedAttendee();
+
+      if (!attendee) {
+        return;
+      }
+
+      try {
+        scanButton.disabled =
+          true;
+
+        addLog(
+          `QR scanned for ${attendee.name}.`
         );
 
         const response =
@@ -646,7 +666,8 @@
 
               body:
                 JSON.stringify({
-                  qrCode
+                  qrCode:
+                    attendee.qrCode
                 })
             }
           );
@@ -661,62 +682,59 @@
           );
         }
 
-        showMessage(
-          "Badge request queued. Waiting for printer confirmation...",
-          "info"
+        addLog(
+          `Print job queued: ${result.printJobId}`
         );
+
+        previousStatus = null;
 
         await loadAttendees();
 
       } catch (error) {
-        showMessage(
-          error.message,
-          "error"
+        statusBox.className =
+          "status-box status-error";
+
+        statusIcon.textContent =
+          "❌";
+
+        statusTitle.textContent =
+          "Check-In Failed";
+
+        statusMessage.textContent =
+          error.message;
+
+        addLog(
+          `Error: ${error.message}`
         );
 
-        await loadAttendees();
+        scanButton.disabled =
+          false;
       }
     }
 
-    async function checkHealth() {
-      try {
-        const response =
-          await fetch(
-            "/api/health"
-          );
-
-        if (!response.ok) {
-          throw new Error();
-        }
-
-        const result =
-          await response.json();
-
-        systemStatus.textContent =
-          `${result.service} — Online`;
-
-        statusDot.className =
-          "status-dot online";
-
-      } catch (error) {
-        systemStatus.textContent =
-          "Service Offline";
-
-        statusDot.className =
-          "status-dot offline";
+    attendeeSelect.addEventListener(
+      "change",
+      () => {
+        previousStatus = null;
+        renderPreview();
       }
-    }
+    );
 
-    async function refreshDashboard() {
+    scanButton.addEventListener(
+      "click",
+      scanQr
+    );
+
+    async function refresh() {
       await loadAttendees();
       await checkHealth();
     }
 
-    refreshDashboard();
+    refresh();
 
     setInterval(
-      refreshDashboard,
-      1000
+      refresh,
+      700
     );
   </script>
 
