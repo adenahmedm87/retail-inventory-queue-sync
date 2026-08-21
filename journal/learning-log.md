@@ -307,3 +307,160 @@ The producer now reads the branch and inventory data from the JSON files, checks
 
 I tested it using the Westlands branch with `NBO-WST-02`, `TSH-BLU-M`, and quantity `3`. The event was sent through RabbitMQ, the consumer received it, updated the inventory, recorded the transaction, and acknowledged the message successfully.
 I tested the POS producer using the Nyali branch with HD-GRY-L and quantity 2. The event went through RabbitMQ and the inventory changed from 8 to 6. Since the reorder level is 6, the system correctly returned lowStock: true. This also showed that the producer works with different branches and products, not only the first test data.
+
+## Day 4 – Meridian Pivot: Solstice Events Check-In
+
+**Work date:** August 20, 2026  
+**Journal updated:** August 21, 2026  
+**Exact start/end time:** 2:30 PM
+
+### Pivot Received
+
+The client changed the requirement from the original retail inventory prototype to an event check-in kiosk for Solstice Events Co.
+
+The new requirement was to stop relying on a synchronous badge-print API. The check-in service now needed to:
+
+- publish badge print requests asynchronously to a message queue;
+- keep an attendee in a pending state while printing;
+- expose a webhook endpoint for print-completion callbacks;
+- change the attendee to checked in only after webhook confirmation;
+- prevent duplicate scans from printing a second badge;
+- correctly handle confirmations arriving out of order.
+
+I continued using RabbitMQ, the unfamiliar technology I had learned during Assignment 1, as the message queue.
+
+### Architecture Change
+
+New flow:
+
+`QR Scan → Express API → RabbitMQ Print Queue → PENDING_PRINT → Printer Simulator → Webhook Callback → CHECKED_IN`
+
+Each print request is assigned a unique `printJobId`. Webhook confirmations are matched using this ID rather than relying on the order callbacks arrive.
+
+### Blocker 1 – Missing attendees.json
+
+**Error:**
+
+`ENOENT: no such file or directory, open ...\data\attendees.json`
+
+**Cause:**
+
+The application expected `data/attendees.json`, but the file was not saved in the expected project folder.
+
+**Fix:**
+
+I corrected the location of `attendees.json` and confirmed that the application could load the three test attendees.
+
+**What I learned:**
+
+An `ENOENT` error usually means the program cannot find the expected file or path. Checking the exact path in the error message helped locate the problem quickly.
+
+### Check-In Queue Test
+
+I scanned `SOLSTICE-ATT-001`.
+
+The API returned:
+
+`PENDING_PRINT`
+
+and created a unique `printJobId`.
+
+This confirmed that scanning an attendee publishes a print request without immediately setting the attendee to `CHECKED_IN`.
+
+### Webhook Test
+
+I added:
+
+`POST /webhooks/print-completed`
+
+I manually sent the active `printJobId` to this endpoint.
+
+The attendee changed:
+
+`PENDING_PRINT → CHECKED_IN`
+
+This confirmed that check-in is completed only after print confirmation.
+
+### Duplicate Scan Test
+
+I scanned ATT-001 again after the attendee was already checked in.
+
+The API rejected the request with:
+
+`Attendee has already been scanned.`
+
+No second badge print request was created.
+
+### Duplicate Webhook Test
+
+I sent the same completed `printJobId` to the webhook twice.
+
+The second callback returned:
+
+`Print confirmation already processed.`
+
+This showed that duplicate callbacks are handled idempotently.
+
+### Out-of-Order Confirmation Test
+
+I created print jobs for multiple attendees and confirmed them in a different order from the scan order.
+
+The correct attendee was updated each time because callbacks were matched using `printJobId`.
+
+I then automated this test with the printer simulator:
+
+- Neema Mwangi / ATT-003: 4000 ms simulated print delay
+- Brian Otieno / ATT-002: 500 ms simulated print delay
+
+ATT-003 was scanned first and ATT-002 was scanned second.
+
+The server showed:
+
+`Printing badge for Neema Mwangi (4000ms)`  
+`Printing badge for Brian Otieno (500ms)`
+
+Brian's webhook completed first even though his scan happened second. Neema's callback completed afterward.
+
+This confirmed that callback arrival order does not affect which attendee is checked in.
+
+### Blocker 2 – Old RabbitMQ Messages
+
+When the printer simulator was first started, it consumed print messages left over from earlier manual tests.
+
+The server reported:
+
+`Webhook rejected print job: Print job does not match any attendee.`
+
+**Cause:**
+
+The attendee test data had been reset, so the old queued `printJobId` values no longer matched an active print job.
+
+**Resolution:**
+
+The stale messages were rejected, while a fresh QR scan created a new valid print request. The new request was processed successfully through RabbitMQ and the webhook.
+
+**What I learned:**
+
+Durable queues can retain messages across application restarts. Test data and queued messages can therefore become inconsistent when application state is manually reset.
+
+### Current Working State
+
+The pivot prototype now supports:
+
+- three test attendees;
+- asynchronous RabbitMQ badge-print requests;
+- `PENDING_PRINT` status;
+- automatic simulated badge printing;
+- webhook completion callbacks;
+- `CHECKED_IN` status only after confirmation;
+- duplicate-scan protection;
+- duplicate-webhook protection;
+- out-of-order confirmation handling.
+
+### Next Work
+
+- remove or deprecate the old retail routes from the active Assignment 2 application;
+- build the Solstice Events kiosk interface;
+- perform final regression tests;
+- document the Scope Delta Analysis;
+- deploy the Assignment 2 version.
