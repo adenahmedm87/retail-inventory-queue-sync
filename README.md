@@ -30,6 +30,46 @@ The Assignment 1 version is preserved separately so that the later Meridian Pivo
 
 The repository also contains the Learning & Blocker Journal documenting errors, troubleshooting steps, resources consulted, and solutions discovered while learning RabbitMQ.
 
+## Assignment 2 – Meridian Pivot: Solstice Events Check-In
+
+**Client:** Solstice Events Co.  
+**Pivot:** Replace synchronous badge printing with an asynchronous RabbitMQ queue and webhook confirmation flow.
+
+### Live Working Prototype
+
+https://assignment-two-solstice-pivot.onrender.com
+
+> The free Render service may take about 50 seconds to start after a period of inactivity.
+
+### Final Pivot Flow
+
+`QR Scan → RabbitMQ Print Queue → Pending Badge Print → Printer Simulator → Webhook Callback → Checked In`
+
+### Key Behaviours
+
+- attendee remains `PENDING_PRINT` until webhook confirmation;
+- duplicate scans do not create a second badge request;
+- duplicate webhook callbacks are handled safely;
+- callbacks are matched using a unique `printJobId`;
+- out-of-order confirmations update the correct attendee;
+- failed RabbitMQ publishing rolls the attendee back to `NOT_CHECKED_IN`.
+
+### Test Attendees
+
+- Amina Hassan – `SOLSTICE-ATT-001`
+- Brian Otieno – `SOLSTICE-ATT-002`
+- Neema Mwangi – `SOLSTICE-ATT-003`
+
+### Documentation
+
+- Learning & Blocker Journal: `journal/learning-log.md`
+- Scope Delta Analysis: `docs/scope-delta.md`
+
+### Assignment 2 Deployment
+
+- Branch: `main`
+- Live App: https://assignment-two-solstice-pivot.onrender.com
+
 # Retail Inventory Queue Sync
 
 A small event-driven inventory synchronization service built with Node.js and RabbitMQ.
